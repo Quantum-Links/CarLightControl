@@ -1,0 +1,2 @@
+This folder contains Wheels prefabs with diffrent materlias applied. 
+Car prefabs already contains Wheels, so You dont have to put those wheels into Car prefab. Those wheels are separated just in case, if You would like to use them in other cars.
