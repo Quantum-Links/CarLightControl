@@ -1,35 +1,33 @@
 using System;
 using System.Text;
 
-using DG.Tweening;
-
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UI;
 
 public class LightView : MonoBehaviour
 {
-    [SerializeField] Text LightNameText;
-    [SerializeField] Toggle LightToggle;
-    [SerializeField] Image OnImage;
-    [SerializeField] Text OnText;
-    [SerializeField] Image OffImage;
-    [SerializeField] Text OffText;
-    static Color32 OnColor = new Color32(0x14, 0x82, 0x6F, 0xff);
-    static Color32 OnTextColor = new Color32(255, 255, 255, 255);
-    static Color32 OffColor = new Color32(0, 0, 0, 245);
-    static Color32 OffTextColor = new Color32(138, 255, 250, 161);
-    public LightModel LightModel;
+	static Color32 OnColor = new Color32(7, 79, 160, 255);
+	static Color32 OffColor = new Color32(255, 255, 255, 255);
+	public LightModel LightModel;
+	Text lightNameText;
+	Toggle lightToggle;
+	Image onImage;
 	bool isOn;
-    public void Init(LightModel lightModel)
-    {
-        LightModel = lightModel;
-        LightNameText.text = LightModel.LightName;
-    }
-	public async void ToggleChanged(bool ison)
+	private void Awake()
+	{
+		lightToggle = GetComponent<Toggle>();
+		lightToggle.onValueChanged.AddListener(ToggleChanged);
+		lightNameText = transform.Find("Txt_Des").GetComponent<Text>();
+		onImage = transform.Find("Toggle").GetComponent<Image>();
+	}
+	public void Init(LightModel lightModel)
+	{
+		LightModel = lightModel;
+		lightNameText.text = LightModel.LightName;
+	}
+	async void ToggleChanged(bool ison)
 	{
 		isOn = ison;
-		StopAllTweens();
 		try
 		{
 			var buffer = Encoding.UTF8.GetBytes(ison ? LightModel.LightOnProtocol : LightModel.LightOffProtocol);
@@ -39,32 +37,8 @@ public class LightView : MonoBehaviour
 		{
 			Debug.LogError(ex.Message);
 		}
-		AnimateToggle(ison);
+		onImage.CrossFadeColor(isOn ? OnColor : OffColor, 0.1f, true, false);
 		LightModel.LightObject.SetActive(ison);
-	}
-	private void AnimateToggle(bool isOn)
-	{
-		if (isOn)
-		{
-			OnImage.DOColor(OnColor, 0.3f);
-			OnText.DOColor(OnTextColor, 0.3f);
-			OffImage.DOColor(OffColor, 0.3f);
-			OffText.DOColor(OffTextColor, 0.3f);
-		}
-		else
-		{
-			OnImage.DOColor(OffColor, 0.3f);
-			OnText.DOColor(OffTextColor, 0.3f);
-			OffImage.DOColor(OnColor, 0.3f);
-			OffText.DOColor(OnTextColor, 0.3f);
-		}
-	}
-	private void StopAllTweens()
-	{
-		OnImage.DOKill();
-		OnText.DOKill();
-		OffImage.DOKill();
-		OffText.DOKill();
 	}
 	private void Update()
 	{
