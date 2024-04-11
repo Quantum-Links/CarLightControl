@@ -1,8 +1,13 @@
+using System.Collections;
 using System.IO;
+using UnityEngine.UI;
+using SFB;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using UnityEngine.Networking;
+using UnityEngine.Rendering.Universal;
+using System.Runtime.InteropServices;
 public class ScriptMain : MonoBehaviour
 {
 	public static ScriptMain Instance { get; private set; }
@@ -12,20 +17,25 @@ public class ScriptMain : MonoBehaviour
 	CanvasGroup SettingGroup;
 	LightList LightList;
 	Transform Car02_Lights_Emissive;
-	const float AnimationDuration = 0.25f;
+
 
 	CanvasGroup MainGroup;
+	Button TongButton;
+	Button SettingButton;
 
+	GameObject[] TTs = new GameObject[2];
 
 	private void Awake()
 	{
 		Instance = this;
 		LigheToggle = Resources.Load<LightView>("Tog_Light");
+		MainGroup = GetComponent<CanvasGroup>();
 		Car02_Lights_Emissive = GameObject.Find("Car02_Lights_Emissive").transform;
-		HeadTransform = GameObject.Find("Pnl_Head").transform;
-		TrailTransform = GameObject.Find("Pnl_Trail").transform;
-		SettingGroup = GameObject.Find("Pnl_Setting").GetComponent<CanvasGroup>();
-		MainGroup = GameObject.Find("Canvas").GetComponent<CanvasGroup>();
+		HeadTransform = transform.Find("Pnl_Head").transform;
+		TrailTransform = transform.Find("Pnl_Trail").transform;
+		SettingGroup = transform.Find("Pnl_Setting").GetComponent<CanvasGroup>();
+		TongButton = transform.Find("Btn_Tong").GetComponent<Button>();
+		SettingButton = transform.Find("Btn_Setting").GetComponent<Button>();
 
 		var filePath = PlayerPrefs.GetString("jsonPath", $"{Application.persistentDataPath}/Light.json");
 		if (!File.Exists(filePath))
@@ -33,8 +43,46 @@ public class ScriptMain : MonoBehaviour
 			File.WriteAllText(filePath, JsonUtility.ToJson(new LightList()));
 		}
 		LoadJson(filePath);
+		TTs[0] = GameObject.Find("TT1");
+		TTs[1] = GameObject.Find("TT2");
+		TongButton.onClick.AddListener(LoadFile);
+		SettingButton.onClick.AddListener(ShowSetting);
 	}
-	public void LoadJson(string path)
+#if !UNITY_EDITOR && UNITY_WEBGL
+	[DllImport("__Internal")]
+	private static extern void UploadFile(string gameObjectName, string methodName, string filter, bool multiple);
+	public void LoadFile()
+	{
+		UploadFile(gameObject.name, "OnFileUpload", ".png", false);
+	}
+	public void OnFileUpload(string url)
+	{
+		StartCoroutine(OutputRoutine(url));
+	}
+#else
+	private void LoadFile()
+	{
+		var paths = StandaloneFileBrowser.OpenFilePanel("¼ÓÔØÍ´³µÌù", "", "png", false);
+		if (paths.Length > 0)
+		{
+			Debug.Log(paths[0]);
+			StartCoroutine(OutputRoutine(new System.Uri(paths[0]).AbsoluteUri));
+		}
+	}
+#endif
+	private IEnumerator OutputRoutine(string url)
+	{
+		var uwr = UnityWebRequestTexture.GetTexture(url);
+		yield return uwr.SendWebRequest();
+		var tex = DownloadHandlerTexture.GetContent(uwr);
+		foreach (var f in TTs)
+		{
+			var decal = f.GetComponent<DecalProjector>();
+			decal.material.SetTexture("Base_Map", tex);
+			decal.enabled = true;
+		}
+	}
+	private void LoadJson(string path)
 	{
 		LightList = JsonUtility.FromJson<LightList>(File.ReadAllText(path));
 		foreach (var item in LightList.HeadItems)
@@ -54,14 +102,10 @@ public class ScriptMain : MonoBehaviour
 		var iLight = Instantiate(lightPrefab, parentTransform);
 		iLight.Init(lightModel);
 	}
-	public void ShowSetting()
+	private void ShowSetting()
 	{
-		UpdateSettingGroup(SettingGroup.blocksRaycasts == true ? false : true);
-	}
-	private void UpdateSettingGroup(bool show)
-	{
-		SettingGroup.blocksRaycasts = show;
-		SettingGroup.alpha = show ? 1 : 0;
+		SettingGroup.blocksRaycasts = !SettingGroup.blocksRaycasts;
+		SettingGroup.alpha = SettingGroup.blocksRaycasts ? 1 : 0;
 	}
 	private void Update()
 	{

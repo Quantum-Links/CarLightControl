@@ -90,7 +90,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 0
-    m_Value: 0
+    m_Value: -1
   contrast:
     m_OverrideState: 0
     m_Value: -40
@@ -136,7 +136,7 @@ MonoBehaviour:
   active: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.4
+    m_Value: 0.2
 --- !u!114 &849379129802519247
 MonoBehaviour:
   m_ObjectHideFlags: 3
