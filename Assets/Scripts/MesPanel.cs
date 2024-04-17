@@ -1,10 +1,15 @@
+using System.Collections;
+
 using UnityEngine;
 using UnityEngine.UI;
+
+
 
 public class MesPanel : MonoBehaviour
 {
 	Toggle[] colorButtons;
 	Material bodyMaterial;
+	Coroutine coroutine;
 	private void Awake()
 	{
 		bodyMaterial = GameObject.Find("Car02_Body_LOD0").GetComponent<MeshRenderer>().sharedMaterials[0];
@@ -19,18 +24,26 @@ public class MesPanel : MonoBehaviour
 			var color = tmpBtn.GetComponent<Image>().color;
 			tmpBtn.onValueChanged.AddListener(x =>
 			{
-				bodyMaterial.color = color;
+				if (coroutine != null)
+					StopCoroutine(coroutine);
+				coroutine = StartCoroutine(StartAnimation(color));
 				var colorStr = ColorUtility.ToHtmlStringRGBA(bodyMaterial.color);
 				PlayerPrefs.SetString("bodyColor", $"#{colorStr}");
 			});
 		}
 	}
-	//public void SaveParam()
-	//{
-	//	var colorStr = ColorUtility.ToHtmlStringRGBA(bodyMaterial.color);
-	//	Debug.Log(colorStr);
-	//	PlayerPrefs.SetString("bodyColor", $"#{colorStr}");
-	//	PlayerPrefs.SetFloat("rotateSpeed", float.Parse(speedInputField.text));
-	//	CameraControl.Instance.mouseRotSpeed = PlayerPrefs.GetFloat("rotateSpeed", 1);
-	//}
+	private IEnumerator StartAnimation(Color color)
+	{
+		bodyMaterial.SetColor("_Color1", color);
+		bodyMaterial.SetColor("_EdgeColor", color * 618);
+		float fValue = -3;
+		while (fValue <= 3)
+		{
+			fValue += Time.deltaTime * 6.2f;
+			bodyMaterial.SetFloat("_Float", fValue);
+			yield return null;
+		}
+		bodyMaterial.SetColor("_Color2", color);
+		bodyMaterial.SetFloat("_Float", -3f);
+	}
 }

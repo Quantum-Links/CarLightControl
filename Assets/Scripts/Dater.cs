@@ -1,6 +1,10 @@
+using System.IO.Compression;
+using System.IO;
+using System.Text;
+
 using UnityEngine;
 using UnityEngine.UI;
-
+using System;
 public class Dater : MonoBehaviour
 {
 	Text DataTimeText;
@@ -32,8 +36,7 @@ public class Dater : MonoBehaviour
 			>= 7 and < 8 => "Ôç³¿",
 			>= 8 and < 11 => "ÉÏÎç",
 			>= 11 and < 13 => "ÖĞÎç",
-			>= 13 and < 14 => "ÏÂÎç",
-			>= 14 and < 17 => "ÏÂÎç",
+			>= 13 and < 17 => "ÏÂÎç",
 			>= 17 and < 18 => "°øÍí",
 			>= 18 and < 19 => "ÍíÉÏ",
 			_ => "Ò¹¼ä"
