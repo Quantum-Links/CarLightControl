@@ -113,6 +113,8 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _CoatMask: 0.5
+    - _CoatSmoothness: 1
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
@@ -134,6 +136,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _Smoooth: 0.7
     - _Smoothness: 0.8
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -149,10 +152,10 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0, g: 0, b: 0, a: 1}
     - _Color: {r: 0, g: 0, b: 0, a: 1}
-    - _Color1: {r: 0.027450982, g: 0.3098039, b: 0.62745106, a: 1}
-    - _Color2: {r: 0.027450982, g: 0.3098039, b: 0.62745106, a: 1}
+    - _Color1: {r: 0.745283, g: 0, b: 0, a: 1}
+    - _Color2: {r: 0.745283, g: 0, b: 0, a: 1}
     - _Color_1: {r: 0, g: 0.41788268, b: 1, a: 0}
-    - _EdgeColor: {r: 16.964706, g: 191.45882, b: 387.76477, a: 618}
+    - _EdgeColor: {r: 460.5849, g: 0, b: 0, a: 618}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 1, g: 0, b: 0, a: 1}
     - _MaskVector: {r: -1, g: 1, b: 0, a: 0}
